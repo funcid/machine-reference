@@ -24,8 +24,9 @@ public class FindCarServlet extends HttpServlet {
         try {
             Connection connection = DatabaseConnection.initializeDatabase();
             PreparedStatement st = connection.prepareStatement(
-                    "select * from cars where id='" + req.getParameter("id") + "'"
+                    "select * from cars where id=?"
             );
+            st.setString(1, req.getParameter("id"));
             ResultSet rs = st.executeQuery();
             String string = "Машина с ID " + req.getParameter("id") + ":<br>";
             while(rs.next())

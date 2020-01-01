@@ -26,8 +26,9 @@ public class FindCarsByCompanyServlet extends HttpServlet {
         try {
             Connection connection = DatabaseConnection.initializeDatabase();
             PreparedStatement st = connection.prepareStatement(
-                    "select * from cars where company='" + req.getParameter("name") + "'"
+                    "select * from cars where company=?"
             );
+            st.setString(1, req.getParameter("name"));
             ResultSet rs = st.executeQuery();
             StringBuilder stringBuilder = new StringBuilder("Машины марки ");
             stringBuilder.append(req.getParameter("name"));

@@ -1,27 +1,29 @@
 package ru.func.machinereference;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * @author func 01.01.2020
  */
 class DatabaseConnection {
     static Connection initializeDatabase()
-            throws SQLException, ClassNotFoundException {
-        String dbDriver = "com.mysql.jdbc.Driver";
-        String dbURL = "jdbc:mysql://localhost:3306/";
-        String dbName = "data";
-        String dbUsername = "root";
-        String dbPassword = "";
+            throws SQLException, ClassNotFoundException, IOException {
+        Properties prop = new Properties();
+        prop.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("sql.properties"));
 
-        Class.forName(dbDriver);
+        Class.forName("com.mysql.jdbc.Driver");
 
         return DriverManager.getConnection(
-                dbURL + dbName,
-                dbUsername,
-                dbPassword
+                "jdbc:mysql://" +
+                        prop.getProperty("host") + ":" +
+                        prop.getProperty("port") + "/" +
+                        prop.getProperty("data"),
+                prop.getProperty("user"),
+                prop.getProperty("password")
         );
     }
 }
