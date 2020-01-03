@@ -3,6 +3,7 @@ package ru.func.machinereference.handler;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import ru.func.machinereference.GlobalObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +22,7 @@ public class FindCarsByCompanyHandler extends AbstractCarHandler {
 
         final String company = req.getParameter("name");
 
-        String resultString = carDao.findByCompany(company).stream()
+        String resultString = GlobalObject.getContext().getBean("abstractCar", AbstractCarHandler.class).getCarDao().findByCompany(company).stream()
                 .map(car -> String.format("%d - %s<br>", car.getId(), car.getDisplay()))
                 .collect(Collectors.joining());
 

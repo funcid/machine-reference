@@ -13,8 +13,6 @@ import java.util.Properties;
  * @author func 01.01.2020
  */
 public class DatabaseConnection {
-    private static CarDao carDao;
-
     public static Connection initializeDatabase()
             throws SQLException, ClassNotFoundException, IOException {
         Properties prop = new Properties();
@@ -30,13 +28,5 @@ public class DatabaseConnection {
                 prop.getProperty("database.user"),
                 prop.getProperty("database.password")
         );
-    }
-
-    public static CarDao getCarDao() {
-        if (carDao == null) {
-            carDao = new CarDaoImpl();
-        }
-
-        return carDao;
     }
 }

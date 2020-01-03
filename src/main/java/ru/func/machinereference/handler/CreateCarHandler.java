@@ -1,6 +1,7 @@
 package ru.func.machinereference.handler;
 
 import org.springframework.stereotype.Component;
+import ru.func.machinereference.GlobalObject;
 import ru.func.machinereference.entity.Car;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ public class CreateCarHandler extends AbstractCarHandler {
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setContentType("text/html; charset=UTF-8");
 
-        carDao.save(Car.builder()
+        GlobalObject.getContext().getBean("abstractCar", AbstractCarHandler.class).getCarDao().save(Car.builder()
                 .display(req.getParameter("name"))
                 .company(req.getParameter("company"))
                 .build()

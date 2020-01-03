@@ -6,7 +6,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 @UtilityClass
 public class GlobalObject {
-    public ApplicationContext context;
+    private ApplicationContext context;
 
     static {
         AnnotationConfigApplicationContext annotationConfigApplicationContext
@@ -15,5 +15,9 @@ public class GlobalObject {
         annotationConfigApplicationContext.refresh();
 
         context = annotationConfigApplicationContext;
+    }
+
+    public static ApplicationContext getContext() {
+        return context;
     }
 }

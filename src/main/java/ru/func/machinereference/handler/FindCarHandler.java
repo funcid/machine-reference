@@ -1,6 +1,7 @@
 package ru.func.machinereference.handler;
 
 import org.springframework.stereotype.Component;
+import ru.func.machinereference.GlobalObject;
 import ru.func.machinereference.entity.Car;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public class FindCarHandler extends AbstractCarHandler {
 
         final Integer id = Integer.valueOf(req.getParameter("id"));
 
-        Optional<Car> optCar = carDao.findById(id);
+        Optional<Car> optCar = GlobalObject.getContext().getBean("abstractCar", AbstractCarHandler.class).getCarDao().findById(id);
 
         if (optCar.isPresent()) {
             Car car = optCar.get();

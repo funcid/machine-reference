@@ -18,8 +18,6 @@ public class FindCarServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        AbstractCarHandler carServlet = GlobalObject.context.getBean("findCarHandler", AbstractCarHandler.class);
-
-        carServlet.doPost(req, resp);
+        GlobalObject.getContext().getBean("findCarHandler", AbstractCarHandler.class).doPost(req, resp);
     }
 }
