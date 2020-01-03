@@ -4,5 +4,6 @@
 ### Описание
  Этот проект был создан для небольшой практики,
  которая заключалась в создании маленького REST приложения.
- MySql, Tomcat, Maven, Java Servlet
+ Постепенно перехожу к Spring'у.
+ MySql, Tomcat, Maven, Java Servlet, Spring
  
