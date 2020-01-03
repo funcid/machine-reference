@@ -1,5 +1,8 @@
 package ru.func.machinereference;
 
+import ru.func.machinereference.dao.CarDao;
+import ru.func.machinereference.dao.impl.CarDaoImpl;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,8 +12,10 @@ import java.util.Properties;
 /**
  * @author func 01.01.2020
  */
-class DatabaseConnection {
-    static Connection initializeDatabase()
+public class DatabaseConnection {
+    private static CarDao carDao;
+
+    public static Connection initializeDatabase()
             throws SQLException, ClassNotFoundException, IOException {
         Properties prop = new Properties();
         prop.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("sql.properties"));
@@ -19,11 +24,19 @@ class DatabaseConnection {
 
         return DriverManager.getConnection(
                 "jdbc:mysql://" +
-                        prop.getProperty("host") + ":" +
-                        prop.getProperty("port") + "/" +
-                        prop.getProperty("data"),
-                prop.getProperty("user"),
-                prop.getProperty("password")
+                        prop.getProperty("database.host") + ":" +
+                        prop.getProperty("database.port") + "/" +
+                        prop.getProperty("database.name"),
+                prop.getProperty("database.user"),
+                prop.getProperty("database.password")
         );
+    }
+
+    public static CarDao getCarDao() {
+        if (carDao == null) {
+            carDao = new CarDaoImpl();
+        }
+
+        return carDao;
     }
 }
