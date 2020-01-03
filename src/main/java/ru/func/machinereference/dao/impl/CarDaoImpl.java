@@ -1,18 +1,20 @@
 package ru.func.machinereference.dao.impl;
 
-import ru.func.machinereference.DatabaseConnection;
-import ru.func.machinereference.GlobalObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.func.machinereference.dao.CarDao;
 import ru.func.machinereference.entity.Car;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class CarDaoImpl implements CarDao {
-    private Connection connection = GlobalObject.getContext().getBean("connection", DatabaseConnection.class).getConnection();
+
+    @Autowired
+    private Connection connection;
 
     @Override
     public Optional<Car> findById(Integer id) {

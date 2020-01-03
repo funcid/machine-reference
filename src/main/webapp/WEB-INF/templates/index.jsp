@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
   <head>
     <title>$Title$</title>
@@ -13,7 +13,7 @@
   <hr>
   <h3>Найти</h3>
   <form name="findCarsByCompanyForm" method="post" action="findCarsByCompany">
-    Имя марки:    <input type="text" name="name">
+    Имя марки:    <input type="text" name="company">
     <input type="submit" value="Поиск" >
   </form>
   <form name="findCarForm" method="post" action="findCar">
