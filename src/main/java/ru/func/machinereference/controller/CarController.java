@@ -5,8 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import ru.func.machinereference.dao.CarDao;
 import ru.func.machinereference.entity.Car;
+import ru.func.machinereference.repository.CarRepository;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -14,7 +14,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class CarController {
 
     @Autowired
-    private CarDao carDao;
+    private CarRepository carRepository;
 
     @RequestMapping("/")
     public String index() {
@@ -24,7 +24,7 @@ public class CarController {
     @RequestMapping(path = "/createCar", method = POST)
     public String createCar(@RequestParam String name,
                             @RequestParam String company) {
-        carDao.save(Car.builder()
+        carRepository.save(Car.builder()
                 .display(name)
                 .company(company)
                 .build()
@@ -38,7 +38,7 @@ public class CarController {
         ModelAndView modelAndView = new ModelAndView("findCar");
         modelAndView.addObject("id", id);
 
-        carDao.findById(id)
+        carRepository.findById(id)
                 .ifPresent(car -> modelAndView.addObject("car", car));
 
         return modelAndView;
@@ -49,7 +49,7 @@ public class CarController {
         ModelAndView modelAndView = new ModelAndView("findCarsByCompany");
         modelAndView.addObject("company", company);
 
-        modelAndView.addObject("cars", carDao.findByCompany(company));
+        modelAndView.addObject("cars", carRepository.findByCompany(company));
 
         return modelAndView;
     }

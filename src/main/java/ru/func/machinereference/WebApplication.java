@@ -6,7 +6,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.DispatcherServlet;
-import ru.func.machinereference.config.ApplicationConfig;
+import ru.func.machinereference.config.DatabaseConfig;
 import ru.func.machinereference.config.MvcConfig;
 
 import javax.servlet.FilterRegistration;
@@ -20,7 +20,7 @@ public class WebApplication implements WebApplicationInitializer {
     public void onStartup(ServletContext servletContext) {
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
         applicationContext.register(MvcConfig.class);
-        applicationContext.register(ApplicationConfig.class);
+        applicationContext.register(DatabaseConfig.class);
 
         setupDispatcherServlet(servletContext, applicationContext);
         setupCharacterFilter(servletContext);
