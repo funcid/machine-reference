@@ -21,6 +21,10 @@ public class Car {
     @GenericGenerator(name= "increment", strategy= "increment")
     @Column(nullable = false)
     private Integer id;
+
+    @Column(nullable = false)
     private String display;
+
+    @Column(nullable = false)
     private String company;
 }
