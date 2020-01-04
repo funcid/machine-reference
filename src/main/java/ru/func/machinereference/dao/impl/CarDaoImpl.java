@@ -1,75 +1,66 @@
 package ru.func.machinereference.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import ru.func.machinereference.dao.CarDao;
 import ru.func.machinereference.entity.Car;
 
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class CarDaoImpl implements CarDao {
+    private static final String SELECT_BY_ID = "select * from cars where id = ?";
+    private static final String SELECT_BY_COMPANY = "select * from cars where company = ?";
+    private static final String INSERT = "insert into cars(display, company) values (?, ?)";
 
     @Autowired
-    private Connection connection;
+    private JdbcOperations jdbcOperations;
 
     @Override
     public Optional<Car> findById(Integer id) {
-        Optional<Car> optionalCar = Optional.empty();
+        AtomicReference<Car> refCar = new AtomicReference<>();
 
-        try (PreparedStatement st = connection.prepareStatement("select * from cars where id=?")) {
-            st.setInt(1, id);
+        jdbcOperations.query(SELECT_BY_ID,
+                ps -> ps.setInt(1, id),
+                rs -> { refCar.set(convert(rs)); }
+        );
 
-            try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    optionalCar = Optional.of(convert(rs));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); //FIXME
-        }
-
-        return optionalCar;
+        return Optional.ofNullable(refCar.get());
     }
 
     @Override
     public List<Car> findByCompany(String company) {
-        List<Car> resultList = new ArrayList<>();
-
-        try (PreparedStatement st = connection.prepareStatement("select * from cars where company=?")) {
-            st.setString(1, company);
-
-            try (ResultSet rs = st.executeQuery()) {
-                while (rs.next()) {
-                    resultList.add(convert(rs));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); //FIXME
-        }
-
-        return resultList;
+        return jdbcOperations.query(SELECT_BY_COMPANY,
+                ps -> ps.setString(1, company),
+                (rs, i) -> convert(rs)
+        );
     }
 
     @Override
     public Car save(Car car) {
-        try (PreparedStatement st = connection.prepareStatement(
-                "insert into cars(display, company) values (?, ?)",
-                Statement.RETURN_GENERATED_KEYS)) {
-            st.setString(1, car.getDisplay());
-            st.setString(2, car.getCompany());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            st.executeUpdate();
+        int affectedRow = jdbcOperations.update(psc -> {
+            try (PreparedStatement ps = psc.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, car.getDisplay());
+                ps.setString(2, car.getCompany());
 
-            try (ResultSet rs = st.getGeneratedKeys()) {
-                rs.next();
-                car.setId(rs.getInt(1));
+                return ps;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }, keyHolder);
+
+        if (affectedRow > 0) {
+            car.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         }
 
         return car;

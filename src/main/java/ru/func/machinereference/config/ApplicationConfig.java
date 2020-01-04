@@ -1,31 +1,47 @@
 package ru.func.machinereference.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
 @Configuration
+@PropertySource("classpath:sql.properties")
 public class ApplicationConfig {
 
-    @Autowired
-    private DataSourceConfig dataSourceConfig;
+    @Value("${database.host}")
+    private String host;
+
+    @Value("${database.port}")
+    private String port;
+
+    @Value("${database.name}")
+    private String dbName;
+
+    @Value("${database.user}")
+    private String user;
+
+    @Value("${database.password}")
+    private String password;
 
     @Bean
-    public Connection connection() throws ClassNotFoundException, SQLException {
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl(String.format("jdbc:mysql://%s:%s/%s", host, port, dbName));
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
 
-        Class.forName("com.mysql.jdbc.Driver");
+        return dataSource;
+    }
 
-        return DriverManager.getConnection(
-                "jdbc:mysql://" +
-                        dataSourceConfig.getHost() + ":" +
-                        dataSourceConfig.getPort() + "/" +
-                        dataSourceConfig.getDbName(),
-                dataSourceConfig.getUser(),
-                dataSourceConfig.getPassword()
-        );
+    @Bean
+    public JdbcOperations jdbcOperations(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 }
