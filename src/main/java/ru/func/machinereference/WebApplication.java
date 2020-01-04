@@ -1,46 +1,58 @@
 package ru.func.machinereference;
 
-import org.springframework.web.WebApplicationInitializer;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Slf4jLog;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import ru.func.machinereference.config.DatabaseConfig;
 import ru.func.machinereference.config.MvcConfig;
 
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
-import java.nio.charset.StandardCharsets;
+import java.net.InetSocketAddress;
 
-public class WebApplication implements WebApplicationInitializer {
+@Slf4j
+public class WebApplication {
 
-    @Override
-    public void onStartup(ServletContext servletContext) {
+    private void startJetty(String host, int port) {
+        Log.setLog(new Slf4jLog("Jetty.Logger"));
+
+        Server server = new Server(new InetSocketAddress(host, port));
+        server.setHandler(createServletContextHandler(createWebApplicationContext()));
+        try {
+            server.start();
+            server.join();
+        } catch (Exception e) {
+            log.error("Error start server", e);
+        }
+    }
+
+    private ServletContextHandler createServletContextHandler(WebApplicationContext context) {
+        ServletContextHandler contextHandler = new ServletContextHandler();
+        contextHandler.setErrorHandler(null);
+        contextHandler.setContextPath("/");
+        contextHandler.addServlet(new ServletHolder(new DispatcherServlet(context)), "/*");
+        contextHandler.addEventListener(new ContextLoaderListener(context));
+        return contextHandler;
+    }
+
+    private WebApplicationContext createWebApplicationContext() {
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
         applicationContext.register(MvcConfig.class);
         applicationContext.register(DatabaseConfig.class);
 
-        setupDispatcherServlet(servletContext, applicationContext);
-        setupCharacterFilter(servletContext);
+        return applicationContext;
     }
 
-    private void setupDispatcherServlet(ServletContext servletContext, WebApplicationContext context) {
-        ServletRegistration.Dynamic dispatcher
-                = servletContext.addServlet("SpringDispatcher", new DispatcherServlet(context));
-        dispatcher.setLoadOnStartup(1);
-        dispatcher.addMapping("/");
-        dispatcher.setInitParameter("contextClass", context.getClass().getName());
-        servletContext.addListener(new ContextLoaderListener(context));
-    }
+    public static void main(String[] args) {
+        final String host = System.getProperty("host", "127.0.0.1");
+        final int port = Integer.parseInt(System.getProperty("port", "8080"));
 
-    private void setupCharacterFilter(ServletContext servletContext) {
-        FilterRegistration.Dynamic filterRegistration
-                = servletContext.addFilter("encodingFilter", CharacterEncodingFilter.class);
-
-        filterRegistration.setInitParameter("encoding", StandardCharsets.UTF_8.name());
-        filterRegistration.setInitParameter("forceEncoding", "true");
-        filterRegistration.addMappingForUrlPatterns(null, true, "/*");
+        log.info("Web app listen: {}:{}", host, port);
+        new WebApplication().startJetty(host, port);
     }
 }
