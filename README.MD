@@ -4,11 +4,10 @@
 
 Этот проект был создан для небольшой практики,
 которая заключалась в создании маленького REST приложения.
-Постепенно перехожу к Spring'у.
  
 - Maven
 - MySql
-- Spring
+- Spring Boot 2
 
 ## Сборка и запуск
 
@@ -21,11 +20,14 @@ mvn clean package
 ### Запуск
 
 ```shell script
-java -Dfile.encoding=utf-8 MachineReference-1.3-SNAPSHOT.jar
+java -Dfile.encoding=utf-8 MachineReference-1.4-SNAPSHOT.jar
 ```
  
-По-умолчанию, сервер запустится по адресу `127.0.0.1` на порту `8080`.  
-Для изменения этих значений, нужно указать новые значения в следующих параметрах:
+По-умолчанию, сервер запустится по адресу `localhost` на порту `8080`.  
+Для изменения этих значений, нужно указать новые значения
+в файле `/src/main/resources/application.properties`:
 
-- `-Dhost=127.0.0.1`
-- `-Dport=8080`
+```properties
+server.address=localhost
+server.port=8090
+```
