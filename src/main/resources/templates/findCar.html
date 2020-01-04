@@ -1,0 +1,17 @@
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="id" type="java.lang.Integer"*/-->
+<!--/*@thymesVar id="car" type="ru.func.machinereference.entity.Car"*/-->
+<body>
+<div th:if="${car != null}">
+    <b>Машина с ID <span th:text="${id}">[ID]</span>:</b>
+    <ul>
+        <li><b><span th:text="${car.display}">[CAR_NAME]</span> марки <span th:text="${car.company}">[CAR_COMPANY]</span></b></li>
+    </ul>
+</div>
+<div th:if="${car == null}">
+    <b>Машина с ID <span th:text="${id}">[ID]</span> не найдена</b>
+</div>
+
+<p><a href="/">Вернуться</a></p>
+</body>
+</html>

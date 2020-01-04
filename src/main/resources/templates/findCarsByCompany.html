@@ -1,0 +1,18 @@
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="company" type="java.lang.String"*/-->
+<!--/*@thymesVar id="car" type="ru.func.machinereference.entity.Car"*/-->
+<!--/*@thymesVar id="cars" type="java.util.List"*/-->
+<body>
+<div th:unless="${#lists.isEmpty(cars)}">
+    <b>Машина марки <span th:text="${company}">[COMPANY]</span>:</b>
+    <ul th:each="car : ${cars}">
+        <li><b><span th:text="${car.display}">[CAR_NAME]</span> марки <span th:text="${car.company}">[CAR_COMPANY]</span></b></li>
+    </ul>
+</div>
+<div th:if="${#lists.isEmpty(cars)}">
+    <b>Машина марки <span th:text="${company}">[COMPANY]</span> не найдены</b>
+</div>
+
+<p><a href="/">Вернуться</a></p>
+</body>
+</html>
